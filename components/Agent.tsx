@@ -52,6 +52,7 @@ const Agent = ({
 
   const loadMediaDevices = async () => {
     console.log("Loading media devices...");
+    
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter((d) => d.kind === "videoinput");
     const audioDevices = devices.filter((d) => d.kind === "audioinput");

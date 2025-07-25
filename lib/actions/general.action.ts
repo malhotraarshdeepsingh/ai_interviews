@@ -126,3 +126,59 @@ export async function getInterviewsByUserId(
     ...doc.data(),
   })) as Interview[];
 }
+
+// export async function getAllFeedbackForInterview(interviewId: string) {
+//   const snapshot = await db
+//     .collection("feedback")
+//     .where("interviewId", "==", interviewId)
+//     .get();
+
+//   if (snapshot.empty) return [];
+
+//   return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+// }
+
+// Add these functions to your general.action.ts file
+
+export async function getFeedbackById(feedbackId: string): Promise<Feedback | null> {
+  try {
+    const feedbackDoc = await db.collection("feedback").doc(feedbackId).get();
+    
+    if (!feedbackDoc.exists) return null;
+    
+    return { id: feedbackDoc.id, ...feedbackDoc.data() } as Feedback;
+  } catch (error) {
+    console.error("Error getting feedback by ID:", error);
+    return null;
+  }
+}
+
+export async function getAllFeedbackForInterview(interviewId: string): Promise<Feedback[]> {
+  try {
+    const snapshot = await db
+      .collection("feedback")
+      .where("interviewId", "==", interviewId)
+      .orderBy("totalScore", "desc")
+      .get();
+
+    if (snapshot.empty) return [];
+
+    return snapshot.docs.map((doc) => ({ 
+      id: doc.id, 
+      ...doc.data() 
+    })) as Feedback[];
+  } catch (error) {
+    console.error("Error getting all feedback for interview:", error);
+    return [];
+  }
+}
+
+export async function getUserById(userId: string) {
+  try {
+    const userDoc = await db.collection("users").doc(userId).get();
+    return userDoc.exists ? { id: userDoc.id, ...userDoc.data() } : null;
+  } catch (error) {
+    console.error("Error getting user by ID:", error);
+    return null;
+  }
+}
